@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from statistics import mean, stdev
 from functools import reduce
-from numpy import sqrt
+from numpy import sqrt,random
+import os
+import time
 
 # Observer
 class Observable:
@@ -36,7 +38,7 @@ class Sensor(Observable):
 
     def set_value(self, value):
         self.value = value
-        self.notify_observers(self.value)
+        self.notify(self.value)
 
 class Sistema(Observer):
     __instance = None
@@ -53,13 +55,12 @@ class Sistema(Observer):
 
     def add_data(self, data):
         self.data.append(data)
-        self.notify(data)
 
     def get_data(self):
         return self.data
 
     def update(self,data):
-        pass
+        self.data.append(data)
         
     def set_strategy(self, strategy):
         self.strategy = strategy
@@ -120,3 +121,15 @@ class CalcularCuantiles(Strategy):
 if __name__ == "__main__":
     # Uso del patrón Singleton con atributos y métodos
     sistema = Sistema.getInstance()
+    sensor = Sensor("Termómetro")
+    sensor._observers.append(sistema)
+    c = 0 
+    while True:
+        sensor.set_value(random.randint(0,420)/10)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        sistema.set_strategy(CalcularMediaDV())
+        print(sistema.execute_strategy())
+        
+        
+        time.sleep(5)
+        
