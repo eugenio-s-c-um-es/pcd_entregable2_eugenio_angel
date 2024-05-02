@@ -28,6 +28,15 @@ class Observer:
     def update(self, data):
         pass
 
+class Sensor(Observable):
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+        self.value = 0
+
+    def set_value(self, value):
+        self.value = value
+        self.notify_observers(self.value)
 
 class Sistema(Observer):
     __instance = None
