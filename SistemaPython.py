@@ -4,6 +4,7 @@ from functools import reduce
 from numpy import sqrt,random
 import os
 import time
+import sys
 
 # Observer
 class Observable:
@@ -123,13 +124,49 @@ if __name__ == "__main__":
     sistema = Sistema.getInstance()
     sensor = Sensor("Termómetro")
     sensor._observers.append(sistema)
-    c = 0 
+    
+    import threading
+    
+    def get_user_input():
+        global choice
+        while True:
+            print("1. Comprobar datos actuales")
+            print("2. Calcular Estadísticos")
+            print("3. Exit")
+            choice = input("Enter your choice: ")
+            os.system('cls' if os.name == 'nt' else 'clear')
+
+
+    # Iniciar el thread de entrada del usuario
+    print("Menu:")
+    user_input_thread = threading.Thread(target=get_user_input)
+    user_input_thread.start()
+
+    
+    choice = "1"
     while True:
-        sensor.set_value(random.randint(0,420)/10)
         os.system('cls' if os.name == 'nt' else 'clear')
-        sistema.set_strategy(CalcularMediaDV())
-        print(sistema.execute_strategy())
+        sensor.set_value(random.randint(0,420)/10)
+        if choice == "1":
+            print(sistema.get_data())
+        elif choice == "2":
+            
+           
+            sistema.set_strategy(CalcularMediaDV())
+            print(sistema.execute_strategy())
+            sistema.set_strategy(CalcularCuantiles())
+            print(sistema.execute_strategy())
+            sistema.set_strategy(CalcularMaxMin())
+            print(sistema.execute_strategy())
+                
         
+            
+        elif choice == "3":
+            sys.exit()
+        else:
+            print("Entrada incorrecta. Escribe uno de los números de las opciones")
+            
         
         time.sleep(5)
+        
         
