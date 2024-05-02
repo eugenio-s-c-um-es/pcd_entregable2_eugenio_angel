@@ -77,16 +77,14 @@ class Sistema(Observer):
             return "No se supera el umbral"
 
     ## Indica si se ha sobrepasado un DeltaT durante t: 2ºC 30s
-    def ComprobarIncremento(self,delta_t = 0.1, t = 3):
-        res2 = map(lambda x,y : y-x,self.data,self.data[1:])
-        sum = 0
-        
-        for i in res2:
-            sum = sum +1 if i >= delta_t else 0
-            if sum == t:
-                return "Se cumple la condición"
-                
-        return "No se cumple"
+    def ComprobarIncremento(self):
+        self.set_strategy(CalcularMaxMin)
+        respuesta = self.execute_strategy()
+        max = respuesta[1]
+        min = respuesta[3]
+        if max - min >= 10:
+            return "Ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
+        return "No ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
 # Estrategia
 
 class Strategy(ABC):
@@ -118,14 +116,6 @@ class CalcularCuantiles(Strategy):
         
         return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"       
         
-class CheckThreshold(Strategy):
-    def execute(self, data):
-        threshold = 25  # Puedes cambiar este valor
-        return max(data) > threshold
-
-class CheckTemperatureIncrease(Strategy):
-    def execute(self, data):
-        return max(data) - min(data) > 10
 
 if __name__ == "__main__":
     # Uso del patrón Singleton con atributos y métodos
