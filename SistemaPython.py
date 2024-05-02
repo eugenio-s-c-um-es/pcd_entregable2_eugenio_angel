@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from statistics import mean, stdev
+from functools import reduce
+from numpy import sqrt
 
 # Observer
 class Observable:
@@ -75,8 +77,6 @@ class CheckThreshold(Strategy):
 class CheckTemperatureIncrease(Strategy):
     def execute(self, data):
         return max(data) - min(data) > 10
-
-
 
 if __name__ == "__main__":
     # Uso del patrón Singleton con atributos y métodos
