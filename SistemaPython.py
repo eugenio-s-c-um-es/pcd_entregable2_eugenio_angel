@@ -67,6 +67,26 @@ class Sistema(Observer):
     def execute_strategy(self):
         if self.strategy is not None:
             return self.strategy.execute(self.data)
+        
+    def ComprobarUmbral(self,umbral = 33.2):
+        res = True if list(filter(lambda x: x>umbral,self.data)) else False
+
+        if res:
+            return "Se supera el umbral"
+        else:
+            return "No se supera el umbral"
+
+    ## Indica si se ha sobrepasado un DeltaT durante t: 2ºC 30s
+    def ComprobarIncremento(self,delta_t = 0.1, t = 3):
+        res2 = map(lambda x,y : y-x,self.data,self.data[1:])
+        sum = 0
+        
+        for i in res2:
+            sum = sum +1 if i >= delta_t else 0
+            if sum == t:
+                return "Se cumple la condición"
+                
+        return "No se cumple"
 # Estrategia
 
 class Strategy(ABC):
