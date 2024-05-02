@@ -74,10 +74,30 @@ class Strategy(ABC):
     def execute(self, data):
         pass
 
-class CalculateStats(Strategy):
+class CalcularMediaDV(Strategy):
     def execute(self, data):
-        return mean(data), stdev(data)
-
+        n = len(data)
+        media = reduce(lambda x,y : x + y, data)/n
+        dev_tipica = sqrt((reduce(lambda x,y: x + (y-media)**2, data)-data[0] + (data[0]-media)**2)/n)
+        
+        return f"Media: {media} \nDesviación Típica: {dev_tipica}"
+    
+class CalcularMaxMin(Strategy):
+    def execute(self,data):
+        maxi = reduce(lambda x,y: x if x>y else y, data)
+        mini = reduce(lambda x,y: x if x<y else y, data)
+        
+        return f"Máximo: {maxi} \nMínimo: {mini}"
+    
+class CalcularCuantiles(Strategy):
+    def execute(self,data):
+        n = len(data)
+        Q1 = sorted(data)[n//4 ] if n%2 != 0 else (sorted(data)[n//4 -1] + sorted(data)[n//4])/2
+        mediana = sorted(data)[n//2 ] if n%2 != 0 else (sorted(data)[n//2 -1] + sorted(data)[n//2 ])/2
+        Q3 = sorted(data)[3*n//4 ] if n%2 != 0 else (sorted(data)[3 *n//4 -1] + sorted(data)[3 *n//4 ])/2 
+        
+        return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"       
+        
 class CheckThreshold(Strategy):
     def execute(self, data):
         threshold = 25  # Puedes cambiar este valor
