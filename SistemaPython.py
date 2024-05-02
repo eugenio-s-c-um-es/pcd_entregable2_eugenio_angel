@@ -27,7 +27,7 @@ class Observer:
         pass
 
 
-class IoTDataManager(Observer):
+class Sistema(Observer):
     __instance = None
 
     def __init__(self):
@@ -80,4 +80,4 @@ class CheckTemperatureIncrease(Strategy):
 
 if __name__ == "__main__":
     # Uso del patrón Singleton con atributos y métodos
-    sistema = IoTDataManager.getInstance()
+    sistema = Sistema.getInstance()
