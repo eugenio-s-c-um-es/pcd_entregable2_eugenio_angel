@@ -120,6 +120,7 @@ class CalcularCuantiles(Strategy):
         
 
 if __name__ == "__main__":
+    
     # Uso del patrón Singleton con atributos y métodos
     sistema = Sistema.getInstance()
     sensor = Sensor("Termómetro")
@@ -130,15 +131,19 @@ if __name__ == "__main__":
     def get_user_input():
         global choice
         while True:
-            print("1. Comprobar datos actuales")
-            print("2. Calcular Estadísticos")
-            print("3. Exit")
-            choice = input("Enter your choice: ")
+            choice = input("Loading...")
             os.system('cls' if os.name == 'nt' else 'clear')
+            if choice == "3":
+                break
 
 
     # Iniciar el thread de entrada del usuario
-    print("Menu:")
+    print("Menu: Opción 1 por defecto, escriba la que quiera en consola")
+    print("1. Comprobar datos actuales")
+    print("2. Calcular Estadísticos")
+    print("3. Exit")
+    
+    time.sleep(5)
     user_input_thread = threading.Thread(target=get_user_input)
     user_input_thread.start()
 
@@ -149,20 +154,18 @@ if __name__ == "__main__":
         sensor.set_value(random.randint(0,420)/10)
         if choice == "1":
             print(sistema.get_data())
+            print("\nEscribe otra opción si desea cambiar")
         elif choice == "2":
-            
-           
             sistema.set_strategy(CalcularMediaDV())
             print(sistema.execute_strategy())
             sistema.set_strategy(CalcularCuantiles())
             print(sistema.execute_strategy())
             sistema.set_strategy(CalcularMaxMin())
             print(sistema.execute_strategy())
-                
-        
-            
+            print("\nEscribe otra opción si desea cambiar")
         elif choice == "3":
             sys.exit()
+
         else:
             print("Entrada incorrecta. Escribe uno de los números de las opciones")
             
