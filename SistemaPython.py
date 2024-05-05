@@ -23,12 +23,12 @@ class Observable:
 
     def notify(self, data=None):
         for observer in self._observers:
-            observer.update(data)
+            observer.actualizar(data)
 
 
 class Observer:
     @abstractmethod
-    def update(self, data):
+    def actualizar(self, data):
         pass
 
 class Sensor(Observable):
@@ -48,7 +48,7 @@ class Sistema(Observer):
         self.data = []
 
     @classmethod 
-    def getInstance(cls):
+    def obtenerInstancia(cls):
         """ Método de acceso estático. """
         if not cls.__instance:
             cls.__instance = cls()
@@ -57,16 +57,16 @@ class Sistema(Observer):
     def add_data(self, data):
         self.data.append(data)
 
-    def get_data(self):
+    def obtenerDatos(self):
         return self.data
 
-    def update(self,data):
+    def actualizar(self,data):
         self.data.append(data)
         
-    def set_strategy(self, strategy):
+    def establecerEstrategia(self, strategy):
         self.strategy = strategy
 
-    def execute_strategy(self):
+    def ejecutarEstrategia(self):
         if self.strategy is not None:
             return self.strategy.execute(self.data)
         
@@ -80,21 +80,22 @@ class Sistema(Observer):
 
     ## Indica si se ha sobrepasado un DeltaT durante t: 2ºC 30s
     def ComprobarIncremento(self):
-        self.set_strategy(CalcularMaxMin)
-        respuesta = self.execute_strategy()
+        self.establecerEstrategia(CalcularMaxMin)
+        respuesta = self.ejecutarEstrategia()
         max = respuesta[1]
         min = respuesta[3]
         if max - min >= 10:
             return "Ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
         return "No ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
+    
 # Estrategia
 
-class Strategy(ABC):
+class Estrategia(ABC):
     @abstractmethod
     def execute(self, data):
         pass
 
-class CalcularMediaDV(Strategy):
+class CalcularMediaDV(Estrategia):
     def execute(self, data):
         n = len(data)
         media = reduce(lambda x,y : x + y, data)/n
@@ -102,14 +103,14 @@ class CalcularMediaDV(Strategy):
         
         return f"Media: {media} \nDesviación Típica: {dev_tipica}"
     
-class CalcularMaxMin(Strategy):
+class CalcularMaxMin(Estrategia):
     def execute(self,data):
         maxi = reduce(lambda x,y: x if x>y else y, data)
         mini = reduce(lambda x,y: x if x<y else y, data)
         
         return f"Máximo: {maxi} \nMínimo: {mini}"
     
-class CalcularCuantiles(Strategy):
+class CalcularCuantiles(Estrategia):
     def execute(self,data):
         n = len(data)
         Q1 = sorted(data)[n//4 ] if n%2 != 0 else (sorted(data)[n//4 -1] + sorted(data)[n//4])/2
@@ -122,7 +123,7 @@ class CalcularCuantiles(Strategy):
 if __name__ == "__main__":
     
     # Uso del patrón Singleton con atributos y métodos
-    sistema = Sistema.getInstance()
+    sistema = Sistema.obtenerInstancia()
     sensor = Sensor("Termómetro")
     sensor._observers.append(sistema)
     
@@ -152,20 +153,23 @@ if __name__ == "__main__":
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         sensor.set_value(random.randint(0,420)/10)
+        
         if choice == "1":
-            print(sistema.get_data())
+            print(sistema.obtenerDatos())
             print("\nEscribe otra opción si desea cambiar")
+            
         elif choice == "2":
-            sistema.set_strategy(CalcularMediaDV())
-            print(sistema.execute_strategy())
-            sistema.set_strategy(CalcularCuantiles())
-            print(sistema.execute_strategy())
-            sistema.set_strategy(CalcularMaxMin())
-            print(sistema.execute_strategy())
+            sistema.establecerEstrategia(CalcularMediaDV())
+            print(sistema.ejecutarEstrategia())
+            sistema.establecerEstrategia(CalcularCuantiles())
+            print(sistema.ejecutarEstrategia())
+            sistema.establecerEstrategia(CalcularMaxMin())
+            print(sistema.ejecutarEstrategia())
             print("\nEscribe otra opción si desea cambiar")
+            
         elif choice == "3":
             sys.exit()
-
+            
         else:
             print("Entrada incorrecta. Escribe uno de los números de las opciones")
             

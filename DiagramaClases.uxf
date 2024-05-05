@@ -6,7 +6,7 @@
     <coordinates>
       <x>616</x>
       <y>272</y>
-      <w>168</w>
+      <w>176</w>
       <h>168</h>
     </coordinates>
     <panel_attributes>_Singleton: Sistema_
@@ -17,8 +17,10 @@
 --
 +obtenerInstancia()
 +operaciones()
-+obtenerDatosSistema()
-+actualizar(evento)</panel_attributes>
++obtenerDatos()
++actualizar(evento)
++establecerEstrategia(estrategia)
++ejecutarEstrategia()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -31,7 +33,7 @@
     </coordinates>
     <panel_attributes>_Estrategia_
 --
-+aplicarAlgortimo()</panel_attributes>
++execute()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -53,9 +55,9 @@
       <w>128</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>EstrategiaA
+    <panel_attributes>CalcularMediaDV
 --
-+aplicarAlgoritmo()</panel_attributes>
++execute()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -66,9 +68,9 @@
       <w>128</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>EstrategiaB
+    <panel_attributes>CalcularMaxMin
 --
-+aplicarAlgoritmo()</panel_attributes>
++execute()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -79,9 +81,9 @@
       <w>128</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>EstrategiaC
+    <panel_attributes>CalcularCuantiles
 --
-+aplicarAlgoritmo()</panel_attributes>
++execute()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -148,12 +150,12 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>776</x>
+      <x>784</x>
       <y>360</y>
-      <w>160</w>
+      <w>152</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;180.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
   </element>
 </diagram>
