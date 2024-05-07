@@ -54,9 +54,6 @@ class Sistema(Observer):
             cls.__instance = cls()
         return cls.__instance
 
-    def add_data(self, data):
-        self.data.append(data)
-
     def obtenerDatos(self):
         return self.data
 
@@ -64,27 +61,32 @@ class Sistema(Observer):
         self.data.append(data)
         
     def establecerEstrategia(self, strategy):
+        if not isinstance(strategy, Estrategia):
+            raise TypeError("strategy debe ser una instancia de Estrategia")  
         self.strategy = strategy
 
-    def ejecutarEstrategia(self):
+    def ejecutarEstrategia(self, data = None):
         if self.strategy is not None:
-            return self.strategy.execute(self.data)
+            if data is None:
+                return self.strategy.execute(self.data)
+            return self.strategy.execute(data)
         
     def ComprobarUmbral(self,umbral = 33.2):
-        res = True if list(filter(lambda x: x>umbral,self.data)) else False
+        res = True if list(filter(lambda x: x[1]>umbral,self.data[-12:])) else False
 
         if res:
-            return "Se supera el umbral"
+            return "Se ha superado el umbral en los últimos 60 segundos"
         else:
-            return "No se supera el umbral"
+            return "No se ha superado el umbral en los útlimos 60 segundos"
 
     ## Indica si se ha sobrepasado un DeltaT durante t: 2ºC 30s
     def ComprobarIncremento(self):
-        self.establecerEstrategia(CalcularMaxMin)
-        respuesta = self.ejecutarEstrategia()
+        self.establecerEstrategia(CalcularMaxMin())
+        respuesta = self.ejecutarEstrategia(self.data[-6:])
+        respuesta = respuesta.split(" ")
         max = respuesta[1]
         min = respuesta[3]
-        if max - min >= 10:
+        if float(max) - float(min) >= 10:
             return "Ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
         return "No ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
     
@@ -98,24 +100,24 @@ class Estrategia(ABC):
 class CalcularMediaDV(Estrategia):
     def execute(self, data):
         n = len(data)
-        media = reduce(lambda x,y : x + y, data)/n
-        dev_tipica = sqrt((reduce(lambda x,y: x + (y-media)**2, data)-data[0] + (data[0]-media)**2)/n)
+        media = round(reduce(lambda x,y : x + y[1], data, 0)/n,2)
+        dev_tipica = round(sqrt((reduce(lambda x,y: x + (y[1]-media)**2, data, 0)-data[0][1] + (data[0][1]-media)**2)/n),2)
         
         return f"Media: {media} \nDesviación Típica: {dev_tipica}"
     
 class CalcularMaxMin(Estrategia):
     def execute(self,data):
-        maxi = reduce(lambda x,y: x if x>y else y, data)
-        mini = reduce(lambda x,y: x if x<y else y, data)
+        maxi = reduce(lambda x,y: x if x>y[1] else y[1], data, -float("inf"))
+        mini = reduce(lambda x,y: x if x<y[1] else y[1], data, float("inf"))
         
         return f"Máximo: {maxi} \nMínimo: {mini}"
     
 class CalcularCuantiles(Estrategia):
     def execute(self,data):
         n = len(data)
-        Q1 = sorted(data)[n//4 ] if n%2 != 0 else (sorted(data)[n//4 -1] + sorted(data)[n//4])/2
-        mediana = sorted(data)[n//2 ] if n%2 != 0 else (sorted(data)[n//2 -1] + sorted(data)[n//2 ])/2
-        Q3 = sorted(data)[3*n//4 ] if n%2 != 0 else (sorted(data)[3 *n//4 -1] + sorted(data)[3 *n//4 ])/2 
+        Q1 = sorted(data, key=lambda x: x[1])[n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//4 -1][1] + sorted(data, key=lambda x: x[1])[n//4][1])/2
+        mediana = sorted(data, key=lambda x: x[1])[n//2 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//2 -1][1] + sorted(data, key=lambda x: x[1])[n//2 ][1])/2
+        Q3 = sorted(data, key=lambda x: x[1])[3*n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[3 *n//4 -1][1] + sorted(data, key=lambda x: x[1])[3 *n//4 ][1])/2 
         
         return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"       
         
@@ -127,6 +129,10 @@ if __name__ == "__main__":
     sensor = Sensor("Termómetro")
     sensor._observers.append(sistema)
     
+    # Inicializar el sistema con 12 datos
+    for i in range(12):
+        sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
+    
     import threading
     
     def get_user_input():
@@ -134,7 +140,7 @@ if __name__ == "__main__":
         while True:
             choice = input("Loading...")
             os.system('cls' if os.name == 'nt' else 'clear')
-            if choice == "3":
+            if choice == "4":
                 break
 
 
@@ -142,17 +148,17 @@ if __name__ == "__main__":
     print("Menu: Opción 1 por defecto, escriba la que quiera en consola")
     print("1. Comprobar datos actuales")
     print("2. Calcular Estadísticos")
-    print("3. Exit")
+    print("3. Umbral de temperatura y aumento de temperatura")
+    print("4. Exit")
     
-    time.sleep(5)
     user_input_thread = threading.Thread(target=get_user_input)
-    user_input_thread.start()
 
+    choice = input("")
     
-    choice = "1"
+    user_input_thread.start()
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        sensor.set_value(random.randint(0,420)/10)
+        sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
         
         if choice == "1":
             print(sistema.obtenerDatos())
@@ -166,8 +172,13 @@ if __name__ == "__main__":
             sistema.establecerEstrategia(CalcularMaxMin())
             print(sistema.ejecutarEstrategia())
             print("\nEscribe otra opción si desea cambiar")
-            
+        
         elif choice == "3":
+            print(sistema.ComprobarUmbral())
+            print(sistema.ComprobarIncremento())
+            print("\nEscribe otra opción si desea cambiar")
+        
+        elif choice == "4":
             sys.exit()
             
         else:
