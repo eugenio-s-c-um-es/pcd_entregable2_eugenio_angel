@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from statistics import mean, stdev
 from functools import reduce
 from numpy import sqrt,random
 import os
 import time
 import sys
+import threading
 
 # Observer
 class Observable:
@@ -12,6 +12,8 @@ class Observable:
         self._observers = []
 
     def attach(self, observer):
+        if not isinstance(observer, Observer):
+            raise TypeError("observer debe ser una instancia o una subclase de Observer")
         if observer not in self._observers:
             self._observers.append(observer)
 
@@ -79,7 +81,6 @@ class Sistema(Observer):
         else:
             return "No se ha superado el umbral en los útlimos 60 segundos"
 
-    ## Indica si se ha sobrepasado un DeltaT durante t: 2ºC 30s
     def ComprobarIncremento(self):
         self.establecerEstrategia(CalcularMaxMin())
         respuesta = self.ejecutarEstrategia(self.data[-6:])
@@ -124,7 +125,6 @@ class CalcularCuantiles(Estrategia):
 
 if __name__ == "__main__":
     
-    # Uso del patrón Singleton con atributos y métodos
     sistema = Sistema.obtenerInstancia()
     sensor = Sensor("Termómetro")
     sensor._observers.append(sistema)
@@ -133,7 +133,6 @@ if __name__ == "__main__":
     for i in range(12):
         sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
     
-    import threading
     
     def get_user_input():
         global choice
