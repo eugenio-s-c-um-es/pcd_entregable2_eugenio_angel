@@ -188,9 +188,9 @@ class CalcularMaxMin(Estrategia):
 class CalcularCuantiles(Estrategia):
     def execute(self,data):
         n = len(data)
-        Q1 = sorted(data, key=lambda x: x[1])[n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//4 -1][1] + sorted(data, key=lambda x: x[1])[n//4][1])/2
-        mediana = sorted(data, key=lambda x: x[1])[n//2 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//2 -1][1] + sorted(data, key=lambda x: x[1])[n//2 ][1])/2
-        Q3 = sorted(data, key=lambda x: x[1])[3*n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[3 *n//4 -1][1] + sorted(data, key=lambda x: x[1])[3 *n//4 ][1])/2 
+        Q1 = round(sorted(data, key=lambda x: x[1])[n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//4 -1][1] + sorted(data, key=lambda x: x[1])[n//4][1])/2,2)
+        mediana = round(sorted(data, key=lambda x: x[1])[n//2 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//2 -1][1] + sorted(data, key=lambda x: x[1])[n//2 ][1])/2,2)
+        Q3 = round(sorted(data, key=lambda x: x[1])[3*n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[3 *n//4 -1][1] + sorted(data, key=lambda x: x[1])[3 *n//4 ][1])/2,2) 
         
         return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"       
         
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     
     # Inicializar el sistema con 12 datos
     for i in range(12):
-        sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
+        sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,15),2)))
     
     """
     
