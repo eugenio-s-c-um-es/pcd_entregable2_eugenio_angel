@@ -11,19 +11,19 @@ class Observable:
     def __init__(self):
         self._observers = []
 
-    def attach(self, observer):
+    def alta(self, observer):
         if not isinstance(observer, Observer):
             raise TypeError("observer debe ser una instancia o una subclase de Observer")
         if observer not in self._observers:
             self._observers.append(observer)
 
-    def detach(self, observer):
+    def baja(self, observer):
         try:
             self._observers.remove(observer)
         except ValueError:
             pass
 
-    def notify(self, data=None):
+    def notificar(self, data=None):
         for observer in self._observers:
             observer.actualizar(data)
 
@@ -41,11 +41,25 @@ class Sensor(Observable):
 
     def set_value(self, value):
         self.value = value
-        self.notify(self.value)
+        self.notificar(self.value)
 
-class Sistema(Observer):
+class Handler:
+    def __init__(self):
+        self._next_handler = None
+
+    def set_next(self, handler):
+        self._next_handler = handler
+        return handler
+
+    def handle(self, request):
+        if self._next_handler:
+            return self._next_handler.handle(request)
+        return None
+    
+class Sistema(Observer,Handler):
     __instance = None
-
+    
+    
     def __init__(self):
         self.data = []
 
@@ -73,6 +87,27 @@ class Sistema(Observer):
                 return self.strategy.execute(self.data)
             return self.strategy.execute(data)
         
+    def manejar(self,peticion):
+        if peticion == '1':
+            print(self.obtenerDatos())
+            print("\nEscribe otra opción si desea cambiar")
+        elif peticion == '2':
+            self.establecerEstrategia(CalcularMediaDV())
+            print(self.ejecutarEstrategia())
+            self.establecerEstrategia(CalcularCuantiles())
+            print(self.ejecutarEstrategia())
+            self.establecerEstrategia(CalcularMaxMin())
+            print(self.ejecutarEstrategia())
+            print("\nEscribe otra opción si desea cambiar")
+        elif peticion == '3':
+            print(self.ComprobarUmbral())
+            print(self.ComprobarIncremento())
+        elif peticion == '4':
+            sys.exit()
+        else:
+            return super().handle(peticion)
+            
+    
     def ComprobarUmbral(self,umbral = 33.2):
         res = True if list(filter(lambda x: x[1]>umbral,self.data[-12:])) else False
 
@@ -92,7 +127,7 @@ class Sistema(Observer):
         return "No ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
     
 # Estrategia
-
+        
 class Estrategia(ABC):
     @abstractmethod
     def execute(self, data):
@@ -127,7 +162,7 @@ if __name__ == "__main__":
     
     sistema = Sistema.obtenerInstancia()
     sensor = Sensor("Termómetro")
-    sensor._observers.append(sistema)
+    sensor.alta(sistema)
     
     # Inicializar el sistema con 12 datos
     for i in range(12):
@@ -158,31 +193,9 @@ if __name__ == "__main__":
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
-        
-        if choice == "1":
-            print(sistema.obtenerDatos())
-            print("\nEscribe otra opción si desea cambiar")
-            
-        elif choice == "2":
-            sistema.establecerEstrategia(CalcularMediaDV())
-            print(sistema.ejecutarEstrategia())
-            sistema.establecerEstrategia(CalcularCuantiles())
-            print(sistema.ejecutarEstrategia())
-            sistema.establecerEstrategia(CalcularMaxMin())
-            print(sistema.ejecutarEstrategia())
-            print("\nEscribe otra opción si desea cambiar")
-        
-        elif choice == "3":
-            print(sistema.ComprobarUmbral())
-            print(sistema.ComprobarIncremento())
-            print("\nEscribe otra opción si desea cambiar")
-        
-        elif choice == "4":
-            sys.exit()
-            
-        else:
-            print("Entrada incorrecta. Escribe uno de los números de las opciones")
-            
+                    
+        sistema.manejar(choice)
+        #print("Entrada incorrecta. Escribe uno de los números de las opciones")    
         
         time.sleep(5)
         
