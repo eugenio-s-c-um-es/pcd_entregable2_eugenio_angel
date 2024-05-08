@@ -43,26 +43,60 @@ class Sensor(Observable):
         self.value = value
         self.notificar(self.value)
 
-class Handler:
+class Handler(ABC):
     def __init__(self):
         self._next_handler = None
 
     def set_next(self, handler):
+        if not isinstance(handler, Handler):
+            raise TypeError("handler debe ser una instancia de Handler")
         self._next_handler = handler
         return handler
 
-    def handle(self, request):
-        if self._next_handler:
-            return self._next_handler.handle(request)
-        return print("Entrada incorrecta. Escribe uno de los números de las opciones")
+    @abstractmethod
+    def handle(self):
+        pass
     
-class Sistema(Observer,Handler):
+class HandlerEstrategia(Handler):
+    def handle(self, sistema):
+        if not isinstance(sistema, Sistema):
+            raise TypeError("sistema debe ser una instancia de Sistema")
+        sistema.establecerEstrategia(CalcularMediaDV())
+        print(sistema.ejecutarEstrategia())
+        sistema.establecerEstrategia(CalcularCuantiles())
+        print(sistema.ejecutarEstrategia())
+        sistema.establecerEstrategia(CalcularMaxMin())
+        print(sistema.ejecutarEstrategia())
+        #print("\nEscribe otra opción si desea cambiar")
+        if self._next_handler:
+            return self._next_handler.handle(sistema)
+        
+
+class HandlerUmbral(Handler):
+    def handle(self, sistema):
+        if not isinstance(sistema, Sistema):
+            raise TypeError("sistema debe ser una instancia de Sistema")
+        print(sistema.ComprobarUmbral())
+        if self._next_handler:
+            return self._next_handler.handle(sistema)
+
+class HandlerIncremento(Handler):
+    def handle(self, sistema):
+        if not isinstance(sistema, Sistema):
+            raise TypeError("sistema debe ser una instancia de Sistema")
+        print(sistema.ComprobarIncremento())
+        if self._next_handler:
+            return self._next_handler.handle(sistema)
+    
+class Sistema(Observer):
     __instance = None
     
     
     def __init__(self):
         super().__init__()
         self.data = []
+        self.handler = HandlerEstrategia()
+        self.handler.set_next(HandlerUmbral()).set_next(HandlerIncremento())
 
     @classmethod 
     def obtenerInstancia(cls):
@@ -76,6 +110,7 @@ class Sistema(Observer,Handler):
 
     def actualizar(self,data):
         self.data.append(data)
+        self.handler.handle(self)
         
     def establecerEstrategia(self, strategy):
         if not isinstance(strategy, Estrategia):
@@ -87,7 +122,8 @@ class Sistema(Observer,Handler):
             if data is None:
                 return self.strategy.execute(self.data)
             return self.strategy.execute(data)
-        
+    
+    """
     def manejar(self,peticion):
         if peticion == '1':
             print(self.obtenerDatos())
@@ -107,7 +143,7 @@ class Sistema(Observer,Handler):
             sys.exit()
         else:
             return super().handle(peticion)
-            
+    """
     
     def ComprobarUmbral(self,umbral = 33.2):
         res = True if list(filter(lambda x: x[1]>umbral,self.data[-12:])) else False
@@ -169,6 +205,8 @@ if __name__ == "__main__":
     for i in range(12):
         sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
     
+    """
+    
     
     def get_user_input():
         global choice
@@ -180,6 +218,7 @@ if __name__ == "__main__":
 
 
     # Iniciar el thread de entrada del usuario
+    
     print("Menu: Opción 1 por defecto, escriba la que quiera en consola")
     print("1. Comprobar datos actuales")
     print("2. Calcular Estadísticos")
@@ -191,11 +230,12 @@ if __name__ == "__main__":
     choice = input("")
     
     user_input_thread.start()
+    """
+    
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
-                    
-        sistema.manejar(choice)        
+                      
         time.sleep(5)
         
         
