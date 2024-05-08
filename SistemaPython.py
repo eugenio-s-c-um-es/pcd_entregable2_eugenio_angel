@@ -54,13 +54,14 @@ class Handler:
     def handle(self, request):
         if self._next_handler:
             return self._next_handler.handle(request)
-        return None
+        return print("Entrada incorrecta. Escribe uno de los números de las opciones")
     
 class Sistema(Observer,Handler):
     __instance = None
     
     
     def __init__(self):
+        super().__init__()
         self.data = []
 
     @classmethod 
@@ -194,9 +195,7 @@ if __name__ == "__main__":
         os.system('cls' if os.name == 'nt' else 'clear')
         sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
                     
-        sistema.manejar(choice)
-        #print("Entrada incorrecta. Escribe uno de los números de las opciones")    
-        
+        sistema.manejar(choice)        
         time.sleep(5)
         
         
