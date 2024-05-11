@@ -1,6 +1,7 @@
 import pytest
 import time
 from SistemaPython import Sistema, Sensor, CalcularMediaDV, CalcularMaxMin, CalcularCuantiles
+from statistics import mean, stdev
 
 @pytest.fixture
 def sistema_fixture():
@@ -8,6 +9,23 @@ def sistema_fixture():
     sensor = Sensor("Termómetro")
     sensor._observers.append(sistema)
     return sistema
+
+def test_ComprobarMediaDV(sistema_fixture):
+    sistema_fixture.establecerEstrategia(CalcularMediaDV())
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 27.0))
+    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 35.0))
+    resultado = sistema_fixture.ejecutarEstrategia()
+    assert resultado == f"Media: {round(mean([20.0,25.0,30.0, 20.0,25.0,30.0,20.0,25.0,30.0, 20.0,27.0,35.0]),2)} \nDesviación Típica: {round(stdev([20.0,25.0,30.0, 20.0,25.0,30.0,20.0,25.0,30.0, 20.0,27.0,35.0]),2)}"
 
 def test_actualizar(sistema_fixture):
     loongitud = len(sistema_fixture.obtenerDatos())
@@ -30,7 +48,7 @@ def test_ComprobarUmbral(sistema_fixture):
     sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
     sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
     resultado = sistema_fixture.ComprobarUmbral(27.5)
-    assert resultado == "Se ha superado el umbral en los últimos 60 segundos"
+    assert resultado == "Se ha superado el umbral"
 
 def test_ComprobarIncremento(sistema_fixture):
     sistema_fixture.establecerEstrategia(CalcularMaxMin())

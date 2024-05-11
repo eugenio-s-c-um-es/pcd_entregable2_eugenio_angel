@@ -62,12 +62,11 @@ class HandlerEstrategia(Handler):
         if not isinstance(sistema, Sistema):
             raise TypeError("sistema debe ser una instancia de Sistema")
         sistema.establecerEstrategia(CalcularMediaDV())
-        print(sistema.ejecutarEstrategia())
+        print(sistema.ejecutarEstrategia(sistema.data[-12:]))
         sistema.establecerEstrategia(CalcularCuantiles())
-        print(sistema.ejecutarEstrategia())
+        print(sistema.ejecutarEstrategia(sistema.data[-12:]))
         sistema.establecerEstrategia(CalcularMaxMin())
-        print(sistema.ejecutarEstrategia())
-        #print("\nEscribe otra opción si desea cambiar")
+        print(sistema.ejecutarEstrategia(sistema.data[-12:]))
         if self._next_handler:
             return self._next_handler.handle(sistema)
         
@@ -108,6 +107,9 @@ class Sistema(Observer):
     def obtenerDatos(self):
         return self.data
 
+    def add_data(self, data):
+        self.data.append(data)
+    
     def actualizar(self,data):
         self.data.append(data)
         self.handler.handle(self)
@@ -123,35 +125,13 @@ class Sistema(Observer):
                 return self.strategy.execute(self.data)
             return self.strategy.execute(data)
     
-    """
-    def manejar(self,peticion):
-        if peticion == '1':
-            print(self.obtenerDatos())
-            print("\nEscribe otra opción si desea cambiar")
-        elif peticion == '2':
-            self.establecerEstrategia(CalcularMediaDV())
-            print(self.ejecutarEstrategia())
-            self.establecerEstrategia(CalcularCuantiles())
-            print(self.ejecutarEstrategia())
-            self.establecerEstrategia(CalcularMaxMin())
-            print(self.ejecutarEstrategia())
-            print("\nEscribe otra opción si desea cambiar")
-        elif peticion == '3':
-            print(self.ComprobarUmbral())
-            print(self.ComprobarIncremento())
-        elif peticion == '4':
-            sys.exit()
-        else:
-            return super().handle(peticion)
-    """
-    
     def ComprobarUmbral(self,umbral = 33.2):
-        res = True if list(filter(lambda x: x[1]>umbral,self.data[-12:])) else False
+        res = True if list(filter(lambda x: x[1]>umbral,self.data)) else False
 
         if res:
-            return "Se ha superado el umbral en los últimos 60 segundos"
+            return "Se ha superado el umbral"
         else:
-            return "No se ha superado el umbral en los útlimos 60 segundos"
+            return "No se ha superado el umbral"
 
     def ComprobarIncremento(self):
         self.establecerEstrategia(CalcularMaxMin())
@@ -173,10 +153,10 @@ class Estrategia(ABC):
 class CalcularMediaDV(Estrategia):
     def execute(self, data):
         n = len(data)
-        media = round(reduce(lambda x,y : x + y[1], data, 0)/n,2)
-        dev_tipica = round(sqrt((reduce(lambda x,y: x + (y[1]-media)**2, data, 0)-data[0][1] + (data[0][1]-media)**2)/n),2)
+        media = reduce(lambda x,y : x + y[1], data, 0)/n
+        dev_tipica = round(sqrt((reduce(lambda x,y: x + (y[1]-media)**2, data, 0))/(n-1)),2)
         
-        return f"Media: {media} \nDesviación Típica: {dev_tipica}"
+        return f"Media: {round(media,2)} \nDesviación Típica: {dev_tipica}"
     
 class CalcularMaxMin(Estrategia):
     def execute(self,data):
@@ -205,7 +185,6 @@ if __name__ == "__main__":
     for i in range(12):
         sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,15),2)))
     
-    """
     
     
     def get_user_input():
@@ -213,29 +192,35 @@ if __name__ == "__main__":
         while True:
             choice = input("Loading...")
             os.system('cls' if os.name == 'nt' else 'clear')
-            if choice == "4":
+            if choice == "2":
                 break
-
 
     # Iniciar el thread de entrada del usuario
     
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
     print("Menu: Opción 1 por defecto, escriba la que quiera en consola")
-    print("1. Comprobar datos actuales")
-    print("2. Calcular Estadísticos")
-    print("3. Umbral de temperatura y aumento de temperatura")
-    print("4. Exit")
+    print("1. Mostrar datos actuales")
+    print("2. Exit")
+    print("Cualqiuer otra tecla para dejar de mostrar datos actuales")
     
     user_input_thread = threading.Thread(target=get_user_input)
 
+    
     choice = input("")
     
     user_input_thread.start()
-    """
+    
     
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,20),2)))
-                      
+        if choice == "1":
+            print("\n", sistema.obtenerDatos())
+            print("\nEscriba otra opción si desea cambiar\n")
+        elif choice == "2":
+            break
+        sensor.set_value((time.strftime("%Y-%m-%d %H:%M:%S"), round(random.normal(20,15),2)))
+                 
         time.sleep(5)
         
         
