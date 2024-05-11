@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>8</zoom_level>
+  <zoom_level>7</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>656</x>
-      <y>256</y>
-      <w>176</w>
-      <h>144</h>
+      <x>602</x>
+      <y>385</y>
+      <w>154</w>
+      <h>133</h>
     </coordinates>
-    <panel_attributes>_Singleton: Sistema_
+    <panel_attributes>Sistema
 --
--unicaInstancia: Singleton
-
--datosSistema
+-instance: Sistema
+-data : List of Float
+-handler = Manejador
 --
 +obtenerInstancia()
-+operaciones()
 +obtenerDatos()
 +actualizar(evento)
-+manejar(petición)</panel_attributes>
++ejecutarEstrategia()
++ComprobarUmbral(umbral)
++ComprobarINcremento()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>184</x>
-      <y>128</y>
-      <w>168</w>
-      <h>40</h>
+      <x>161</x>
+      <y>427</y>
+      <w>147</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>_Estrategia_
 --
@@ -38,21 +39,21 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>344</x>
-      <y>144</y>
-      <w>192</w>
-      <h>24</h>
+      <x>301</x>
+      <y>441</y>
+      <w>315</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;220.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;430.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>48</x>
-      <y>320</y>
-      <w>128</w>
-      <h>40</h>
+      <x>42</x>
+      <y>595</y>
+      <w>112</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>CalcularMediaDV
 --
@@ -62,10 +63,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>200</x>
-      <y>320</y>
-      <w>128</w>
-      <h>40</h>
+      <x>175</x>
+      <y>595</y>
+      <w>112</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>CalcularMaxMin
 --
@@ -75,10 +76,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>352</x>
-      <y>320</y>
-      <w>128</w>
-      <h>40</h>
+      <x>308</x>
+      <y>595</y>
+      <w>112</w>
+      <h>35</h>
     </coordinates>
     <panel_attributes>CalcularCuantiles
 --
@@ -88,10 +89,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>104</x>
-      <y>272</y>
-      <w>24</w>
-      <h>64</h>
+      <x>91</x>
+      <y>553</y>
+      <w>21</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -99,10 +100,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>256</x>
-      <y>160</y>
-      <w>24</w>
-      <h>176</h>
+      <x>224</x>
+      <y>455</y>
+      <w>21</w>
+      <h>154</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;200.0</additional_attributes>
@@ -110,10 +111,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>272</y>
-      <w>24</w>
-      <h>64</h>
+      <x>357</x>
+      <y>553</y>
+      <w>21</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -121,10 +122,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>104</x>
-      <y>272</y>
-      <w>328</w>
-      <h>24</h>
+      <x>91</x>
+      <y>553</y>
+      <w>287</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;390.0;10.0</additional_attributes>
@@ -132,14 +133,14 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>968</x>
-      <y>296</y>
-      <w>168</w>
-      <h>96</h>
+      <x>1022</x>
+      <y>406</y>
+      <w>147</w>
+      <h>84</h>
     </coordinates>
-    <panel_attributes>Publicador
+    <panel_attributes>Observable
 --
-+subscriptores: Subscriptor
+-subscriptores: Subscriptor
 --
 +alta(subscriptor)
 +baja(subscriptor)
@@ -149,107 +150,173 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>824</x>
-      <y>344</y>
-      <w>160</w>
-      <h>24</h>
+      <x>973</x>
+      <y>448</y>
+      <w>63</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;180.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>520</x>
-      <y>112</y>
-      <w>168</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>Contexto
---
-+manejar(peticion)
-+establecerEstrategia(evento)
-+ejecutarEstrategia()</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>816</x>
-      <y>112</y>
-      <w>168</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>Umbral
---
-+manejar(peticion)</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>736</x>
-      <y>208</y>
-      <w>24</w>
-      <h>64</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>592</x>
-      <y>208</y>
-      <w>320</w>
-      <h>24</h>
-    </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;380.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>592</x>
-      <y>176</y>
-      <w>24</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>888</x>
-      <y>176</y>
-      <w>24</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>968</x>
-      <y>480</y>
-      <w>168</w>
-      <h>56</h>
+      <x>1022</x>
+      <y>567</y>
+      <w>147</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>Sensor
---</panel_attributes>
+--
+-name: str
++value : float
+--
++set_value(value)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1040</x>
-      <y>384</y>
-      <w>24</w>
-      <h>112</h>
+      <x>1085</x>
+      <y>483</y>
+      <w>21</w>
+      <h>98</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>833</x>
+      <y>427</y>
+      <w>147</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Observer
+--
++actualizar(data)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>749</x>
+      <y>448</y>
+      <w>98</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>602</x>
+      <y>259</y>
+      <w>147</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Manejador
+--
+-next_handler : Manejador
+--
++set_next(Manejador)
++manejar()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>371</x>
+      <y>91</y>
+      <w>147</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>ManejadorEstrategia
+--
++manejar()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>595</x>
+      <y>91</y>
+      <w>147</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>ManejadorUmbral
+--
++manejar()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>798</x>
+      <y>91</y>
+      <w>147</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>ManejadorIncremento
+--
++manejar()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>665</x>
+      <y>322</y>
+      <w>21</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>665</x>
+      <y>126</y>
+      <w>21</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>441</x>
+      <y>189</y>
+      <w>448</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;620.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>868</x>
+      <y>126</y>
+      <w>21</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>441</x>
+      <y>126</y>
+      <w>21</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
