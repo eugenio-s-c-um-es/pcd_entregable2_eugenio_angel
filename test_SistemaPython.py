@@ -15,22 +15,14 @@ def test_ComprobarMediaDV(sistema_fixture):
     sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
     sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
     sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 25.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 20.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 27.0))
-    sistema_fixture.add_data((time.strftime("%Y-%m-%d %H:%M:%S"), 35.0))
+
     resultado = sistema_fixture.ejecutarEstrategia()
-    assert resultado == f"Media: {round(mean([20.0,25.0,30.0, 20.0,25.0,30.0,20.0,25.0,30.0, 20.0,27.0,35.0]),2)} \nDesviación Típica: {round(stdev([20.0,25.0,30.0, 20.0,25.0,30.0,20.0,25.0,30.0, 20.0,27.0,35.0]),2)}"
+    assert resultado == f"Media: {round(mean([20.0,25.0,30.0]),2)} \nDesviación Típica: {round(stdev([20.0,25.0,30.0]),2)}"
 
 def test_actualizar(sistema_fixture):
-    loongitud = len(sistema_fixture.obtenerDatos())
+    longitud = len(sistema_fixture.obtenerDatos())
     sistema_fixture.actualizar((time.strftime("%Y-%m-%d %H:%M:%S"), 30.0))
-    assert len(sistema_fixture.obtenerDatos()) == loongitud + 1
+    assert len(sistema_fixture.obtenerDatos()) == longitud + 1
 
 def test_establecerEstrategia(sistema_fixture):
     estrategia = CalcularMediaDV()

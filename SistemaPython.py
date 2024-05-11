@@ -3,10 +3,9 @@ from functools import reduce
 from numpy import sqrt,random
 import os
 import time
-import sys
 import threading
 
-# Observer
+# Definiomos la clase observer, así como las funciones básicas de alta, baja y notificar
 class Observable:
     def __init__(self):
         self._observers = []
@@ -33,6 +32,8 @@ class Observer:
     def actualizar(self, data):
         pass
 
+# Definimos la clase sensor, que hereda de Observable, con su correspondiente función para 
+# establecer el valor del sensor
 class Sensor(Observable):
     def __init__(self, name):
         super().__init__()
@@ -43,6 +44,8 @@ class Sensor(Observable):
         self.value = value
         self.notificar(self.value)
 
+# Creamos ahora la clase handler para establecer una cadena de responsabilidad que permita 
+# gestionar los diferentes requisitos
 class Handler(ABC):
     def __init__(self):
         self._next_handler = None
@@ -56,7 +59,8 @@ class Handler(ABC):
     @abstractmethod
     def handle(self):
         pass
-    
+
+# Handler para las estraegias
 class HandlerEstrategia(Handler):
     def handle(self, sistema):
         if not isinstance(sistema, Sistema):
@@ -70,7 +74,7 @@ class HandlerEstrategia(Handler):
         if self._next_handler:
             return self._next_handler.handle(sistema)
         
-
+# Handler para comprobar el umbral
 class HandlerUmbral(Handler):
     def handle(self, sistema):
         if not isinstance(sistema, Sistema):
@@ -79,6 +83,7 @@ class HandlerUmbral(Handler):
         if self._next_handler:
             return self._next_handler.handle(sistema)
 
+# Handler para comprobar el incremento
 class HandlerIncremento(Handler):
     def handle(self, sistema):
         if not isinstance(sistema, Sistema):
@@ -87,10 +92,11 @@ class HandlerIncremento(Handler):
         if self._next_handler:
             return self._next_handler.handle(sistema)
     
+# Creamos la clase sistema, que hereda de Observer, y que será la encargada de gestionar los datos
 class Sistema(Observer):
     __instance = None
     
-    
+    # Establecemos el orden de los handlers
     def __init__(self):
         super().__init__()
         self.data = []
@@ -104,27 +110,33 @@ class Sistema(Observer):
             cls.__instance = cls()
         return cls.__instance
 
+    # Función para obtener los datos
     def obtenerDatos(self):
         return self.data
 
+    # Función para añadir datos sin notificar (para inicializar el sistema y tests)
     def add_data(self, data):
         self.data.append(data)
     
+    # Función para actualizar los datos notificando a los observers
     def actualizar(self,data):
         self.data.append(data)
         self.handler.handle(self)
-        
+    
+    # Función para establecer la estrategia 
     def establecerEstrategia(self, strategy):
         if not isinstance(strategy, Estrategia):
             raise TypeError("strategy debe ser una instancia de Estrategia")  
         self.strategy = strategy
 
+    # Función para ejecutar la estrategia
     def ejecutarEstrategia(self, data = None):
         if self.strategy is not None:
             if data is None:
                 return self.strategy.execute(self.data)
             return self.strategy.execute(data)
     
+    # Función para comprobar si se ha superado un umbral
     def ComprobarUmbral(self,umbral = 33.2):
         res = True if list(filter(lambda x: x[1]>umbral,self.data)) else False
 
@@ -133,23 +145,25 @@ class Sistema(Observer):
         else:
             return "No se ha superado el umbral"
 
+    # Función para comprobar el incremento
     def ComprobarIncremento(self):
         self.establecerEstrategia(CalcularMaxMin())
         respuesta = self.ejecutarEstrategia(self.data[-6:])
         respuesta = respuesta.split(" ")
         max = respuesta[1]
         min = respuesta[3]
+        
         if float(max) - float(min) >= 10:
             return "Ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
         return "No ha habido un aumento de temperatura de más de 10ºC en los últimos 30s"
     
 # Estrategia
-        
 class Estrategia(ABC):
     @abstractmethod
     def execute(self, data):
         pass
 
+# Estrategia concreta para Media y Desviación Típica
 class CalcularMediaDV(Estrategia):
     def execute(self, data):
         n = len(data)
@@ -158,6 +172,7 @@ class CalcularMediaDV(Estrategia):
         
         return f"Media: {round(media,2)} \nDesviación Típica: {dev_tipica}"
     
+# Estrategia concreta para Máximo y Mínimo
 class CalcularMaxMin(Estrategia):
     def execute(self,data):
         maxi = reduce(lambda x,y: x if x>y[1] else y[1], data, -float("inf"))
@@ -165,28 +180,29 @@ class CalcularMaxMin(Estrategia):
         
         return f"Máximo: {maxi} \nMínimo: {mini}"
     
+# Estrategia concreta para Cuantiles
 class CalcularCuantiles(Estrategia):
     def execute(self,data):
         n = len(data)
-        Q1 = round(sorted(data, key=lambda x: x[1])[n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//4 -1][1] + sorted(data, key=lambda x: x[1])[n//4][1])/2,2)
-        mediana = round(sorted(data, key=lambda x: x[1])[n//2 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[n//2 -1][1] + sorted(data, key=lambda x: x[1])[n//2 ][1])/2,2)
-        Q3 = round(sorted(data, key=lambda x: x[1])[3*n//4 ][1] if n%2 != 0 else (sorted(data, key=lambda x: x[1])[3 *n//4 -1][1] + sorted(data, key=lambda x: x[1])[3 *n//4 ][1])/2,2) 
+        sorted_data = sorted(data, key=lambda x: x[1])
+        Q1 = round(sorted_data[n//4 ][1] if n%2 != 0 else (sorted_data[n//4 -1][1] + sorted_data[n//4][1])/2,2)
+        mediana = round(sorted_data[n//2 ][1] if n%2 != 0 else (sorted_data[n//2 -1][1] + sorted_data[n//2 ][1])/2,2)
+        Q3 = round(sorted_data[3*n//4 ][1] if n%2 != 0 else (sorted_data[3 *n//4 -1][1] + sorted_data[3 *n//4 ][1])/2,2) 
         
-        return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"       
-        
+        return f"Q1: {Q1} \nMediana: {mediana} \nQ3: {Q3}"        
 
 if __name__ == "__main__":
     
+    # Creamos el sistema y el sensor
     sistema = Sistema.obtenerInstancia()
     sensor = Sensor("Termómetro")
     sensor.alta(sistema)
     
     # Inicializar el sistema con 12 datos
     for i in range(12):
-        sistema.actualizar((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,15),2)))
+        sistema.add_data((time.strftime(f"%Y-%m-%d %H:%M:%S"), round(random.normal(20,15),2)))
     
-    
-    
+    # Función para obtener la entrada del usuario
     def get_user_input():
         global choice
         while True:
@@ -194,24 +210,24 @@ if __name__ == "__main__":
             os.system('cls' if os.name == 'nt' else 'clear')
             if choice == "2":
                 break
-
-    # Iniciar el thread de entrada del usuario
     
+    # Limpiar la pantalla
     os.system('cls' if os.name == 'nt' else 'clear')
     
-    print("Menu: Opción 1 por defecto, escriba la que quiera en consola")
-    print("1. Mostrar datos actuales")
-    print("2. Exit")
-    print("Cualqiuer otra tecla para dejar de mostrar datos actuales")
-    
-    user_input_thread = threading.Thread(target=get_user_input)
+    # Menú
+    print("Menu:\n"
+          "1. Mostrar datos actuales\n"
+          "2. Exit\n"
+          "Cualquier otra tecla para no mostrar datos actuales")
 
-    
+    # Pedimos la primera entrada del usuario mediante un input normal
     choice = input("")
-    
+
+    # Iniciar el thread de entrada del usuario    
+    user_input_thread = threading.Thread(target=get_user_input)
     user_input_thread.start()
     
-    
+    # Bucle principal
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         if choice == "1":
